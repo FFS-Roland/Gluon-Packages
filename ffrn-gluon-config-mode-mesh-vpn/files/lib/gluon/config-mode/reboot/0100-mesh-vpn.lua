@@ -11,7 +11,8 @@ else
 
   local pubkey = util.trim(util.exec("/etc/init.d/fastd show_key " .. "mesh_vpn"))
   local hostname = uci:get_first("system", "system", "hostname")
-  local mac = uci:get_first('gluon.sysconfig').primary_mac
+  local mac = sysconfig.primary_mac
+
 
   local msg = i18n.translate('gluon-config-mode:pubkey')
 
