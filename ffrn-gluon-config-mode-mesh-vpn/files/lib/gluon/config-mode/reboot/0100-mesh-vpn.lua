@@ -18,6 +18,7 @@ else
   return function ()
            luci.template.render_string(msg, { pubkey=pubkey
                                             , hostname=hostname
+                                            , mac=mac
                                             , site=site
                                             , sysconfig=sysconfig
                                             })
