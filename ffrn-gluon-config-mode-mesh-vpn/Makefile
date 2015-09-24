@@ -28,7 +28,7 @@ define Build/Compile
 	$(call GluonBuildI18N,ffrn-gluon-config-mode-mesh-vpn,i18n)
 endef
 
-define Package/gluon-config-mode-mesh-vpn/install
+define Package/ffrn-gluon-config-mode-mesh-vpn/install
 	$(CP) ./files/* $(1)/
 	$(call GluonInstallI18N,ffrn-gluon-config-mode-mesh-vpn,$(1))
 endef
