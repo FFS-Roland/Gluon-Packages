@@ -11,15 +11,12 @@ else
 
   local pubkey = util.trim(util.exec("/etc/init.d/fastd show_key " .. "mesh_vpn"))
   local hostname = uci:get_first("system", "system", "hostname")
-  local mac = sysconfig.primary_mac
-
 
   local msg = i18n.translate('gluon-config-mode:pubkey')
 
   return function ()
            luci.template.render_string(msg, { pubkey=pubkey
                                             , hostname=hostname
-                                            , mac=mac
                                             , site=site
                                             , sysconfig=sysconfig
                                             })
