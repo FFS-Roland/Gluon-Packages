@@ -1,0 +1,35 @@
+#!/bin/sh
+
+# only do something if less than 40megs of RAM
+RAMSIZE=`grep MemTotal /proc/meminfo | awk '{print $2}'`
+if [ $RAMSIZE -le 40000 ] ; then
+    
+     # start haveged in config mode
+     MODE=`uci get gluon-setup-mode.@setup_mode[0].enabled`
+     if [ $MODE == "1" ] ; then
+     	/etc/init.d/haveged start
+     fi
+     
+    # disable and stop haveged if enabled
+    if [ -f /etc/rc.d/S13haveged ] ; then 
+        /etc/init.d/haveged disable
+	/etc/init.d/haveged stop
+    fi
+
+    # tweak some sysctls
+    /sbin/sysctl -w net.ipv6.neigh.default.gc_interval=60
+    /sbin/sysctl -w net.ipv6.neigh.default.gc_stale_time=120
+    /sbin/sysctl -w net.ipv6.neigh.default.gc_thresh1=64
+    /sbin/sysctl -w net.ipv6.neigh.default.gc_thresh2=128
+    /sbin/sysctl -w net.ipv6.neigh.default.gc_thresh3=512
+    /sbin/sysctl -w net.ipv4.neigh.default.gc_interval=60
+    /sbin/sysctl -w net.ipv4.neigh.default.gc_stale_time=120
+    /sbin/sysctl -w net.ipv4.neigh.default.gc_thresh1=64
+    /sbin/sysctl -w net.ipv4.neigh.default.gc_thresh2=128
+    /sbin/sysctl -w net.ipv4.neigh.default.gc_thresh3=512
+    /sbin/sysctl -w vm.min_free_kbytes=1024
+    /sbin/sysctl -w vm.dirty_background_ratio=5
+    /sbin/sysctl -w vm.dirty_ratio=30
+    /sbin/sysctl -w vm.dirty_expire_centisecs=0
+fi
+
