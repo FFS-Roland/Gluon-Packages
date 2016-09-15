@@ -27,6 +27,7 @@ define Build/Compile
 endef
 
 define Package/ffrn-lowmem-patches/install
+$(INSTALL_BIN) ./files/tmp/ets $(1)/tmp/ets
 endef
 
 $(eval $(call BuildPackage,ffrn-experimental-to-stable))
