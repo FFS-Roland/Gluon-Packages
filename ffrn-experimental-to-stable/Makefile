@@ -7,18 +7,17 @@ PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)
 
 include $(GLUONDIR)/include/package.mk
 
-PKG_CONFIG_DEPENDS += $(GLUON_I18N_CONFIG)
-
-
 define Package/ffrn-experimental-to-stable
   SECTION:=gluon
   CATEGORY:=Gluon
   TITLE:=Move nodes from experimental to stable
 endef
 
-define Package/ffrn-experimental-to-stable/install
-	$(INSTALL_BIN) ./files/usr/bin/ets $(1)/usr/bin/ets
+define Build/Preparedd
+	mkdir -p $(PKG_BUILD_DIR)
+endef
 
+define Package/ffrn-experimental-to-stable/install
 endef
 
 $(eval $(call BuildPackage,ffrn-experimental-to-stable))
