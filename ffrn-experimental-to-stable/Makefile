@@ -18,6 +18,8 @@ define Build/Preparedd
 endef
 
 define Package/ffrn-experimental-to-stable/install
+	$(INSTALL_DIR) $(1)/usr/sbin
+	$(INSTALL_BIN) ./files/usr/sbin/ets $(1)/usr/sbin/ets
 endef
 
 $(eval $(call BuildPackage,ffrn-experimental-to-stable))
