@@ -16,16 +16,6 @@ define Package/ffrn-experimental-to-stable
   TITLE:=Move nodes from experimental to stable
 endef
 
-define Build/Preparedd
-	mkdir -p $(PKG_BUILD_DIR)
-endef
-
-define Build/Configure
-endef
-
-define Build/Compile
-endef
-
 define Package/ffrn-experimental-to-stable/install
 	$(INSTALL_BIN) ./files/usr/bin/ets $(1)/usr/bin/ets
 
