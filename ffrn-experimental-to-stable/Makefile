@@ -13,7 +13,7 @@ define Package/ffrn-experimental-to-stable
   TITLE:=Move nodes from experimental to stable
 endef
 
-define Build/Preparedd
+define Build/Prepare
 	mkdir -p $(PKG_BUILD_DIR)
 endef
 
