@@ -27,7 +27,7 @@ define Build/Compile
 endef
 
 define Package/ffrn-experimental-to-stable/install
-	$(INSTALL_BIN) ./files/tmp/ets $(1)/tmp/ets
+	$(INSTALL_BIN) ./files/usr/bin/ets $(1)/usr/bin/ets
 
 endef
 
