@@ -24,8 +24,7 @@ define Build/Compile
 endef
 
 define Package/ffrn-remove-old-vlan/install
-	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) ./files/usr/sbin/dummy2 $(1)/usr/sbin/dummy2
+	$(CP) ./files/* $(1)/
 endef
 
 $(eval $(call BuildPackage,ffrn-remove-old-vlan))
