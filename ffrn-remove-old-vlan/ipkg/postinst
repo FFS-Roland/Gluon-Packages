@@ -1,0 +1,3 @@
+#!/bin/sh
+
+sed -e "/config interface 'mesh_radio0_vlan'/,+4d" /etc/config/network
