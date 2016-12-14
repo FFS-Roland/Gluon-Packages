@@ -1,3 +1,0 @@
-#!/bin/sh
-
-sed -i "s/option branch 'experimental'/option branch 'stable'/g" /etc/config/autoupdater
