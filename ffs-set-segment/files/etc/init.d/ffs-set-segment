@@ -1,0 +1,15 @@
+#!/bin/sh /etc/rc.common
+
+START=97
+
+start () {
+    uci set fastd.mesh_vpn.on_connect='/usr/sbin/ffs-set-segment'
+    uci set fastd.mesh_vpn_backbone.auto_segment='1'
+    /usr/sbin/ffs-set-segment
+    /etc/init.d/micrond enable
+    /etc/init.d/micrond restart    
+}
+
+stop() {
+    true
+}
