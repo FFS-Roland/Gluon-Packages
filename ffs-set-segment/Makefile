@@ -1,6 +1,6 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=ffs-set-segment-patches
+PKG_NAME:=ffs-set-segment
 PKG_VERSION:=1
 
 PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)
@@ -10,10 +10,10 @@ include $(GLUONDIR)/include/package.mk
 PKG_CONFIG_DEPENDS += $(GLUON_I18N_CONFIG)
 
 
-define Package/ffs-set-segment-patches
+define Package/ffs-set-segment
   SECTION:=gluon
   CATEGORY:=Gluon
-  TITLE:=Patch files for setting correct segment
+  TITLE:=Modify fastd config for setting correct segment
 endef
 
 define Build/Prepare
@@ -26,7 +26,7 @@ endef
 define Build/Compile
 endef
 
-define Package/ffs-set-segment-patches/install
+define Package/ffs-set-segment/install
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/etc/init.d/ffs-set-segment $(1)/etc/init.d/ffs-set-segment
 	$(INSTALL_DIR) $(1)/usr/sbin
@@ -35,4 +35,4 @@ define Package/ffs-set-segment-patches/install
 	$(INSTALL_BIN) ./files/usr/lib/micron.d/ffs-set-segment $(1)/usr/lib/micron.d/ffs-set-segment
 endef
 
-$(eval $(call BuildPackage,ffs-set-segment-patches))
+$(eval $(call BuildPackage,ffs-set-segment))
