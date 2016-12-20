@@ -32,18 +32,11 @@ define Build/Compile
 endef
 
 define Package/gluon-config-mode-zip/install
-	$(CP) ./files/* $(1)/
-
 	$(INSTALL_DIR) $(1)/lib/gluon/respondd
 	$(CP) $(PKG_BUILD_DIR)/respondd.so $(1)/lib/gluon/respondd/node-info-zip.so
 	
 	$(CP) $(PKG_BUILD_DIR)/luadest/* $(1)/
 	$(call GluonInstallI18N,gluon-config-mode-zip,$(1))
-endef
-
-define Package/gluon-config-mode-zip/postinst
-#!/bin/sh
-$(call GluonCheckSite,check_site.lua)
 endef
 
 $(eval $(call BuildPackage,gluon-config-mode-zip))
