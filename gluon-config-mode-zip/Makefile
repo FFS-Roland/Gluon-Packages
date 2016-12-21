@@ -27,6 +27,7 @@ define Build/Configure
 endef
 
 define Build/Compile
+	$(call Build/Compile/Default)
 	$(call GluonBuildI18N,gluon-config-mode-zip,i18n)
 	$(call GluonSrcDiet,./luasrc,$(PKG_BUILD_DIR)/luadest/)
 endef
