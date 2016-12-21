@@ -1,16 +1,13 @@
 #!/bin/sh
 if [  $(ps | grep -c "{$(basename $0)}") -gt 4 ]; then
-    echo started twice
     exit 1
 fi
 
 if [  $(ps | grep -c "fastd") -lt 2 ]; then
-    echo fastd not running
     exit 0
 fi
 
 if [ "$(uci get fastd.mesh_vpn_backbone.auto_segment)" = "0" ]; then
-    echo auto_segment disabled
     exit 0
 fi 
 
@@ -22,7 +19,6 @@ done
 NODEID=ffs-$NODEID
 SEGMENT=`nslookup $NODEID.segassign.freifunk-stuttgart.de  [::1]:54 |tail -n1 `
 if [[ -z "${SEGMENT// }" ]]; then
-    echo Node not known
     exit 1
 fi
 SEGMENT=${SEGMENT/Address 1: 2001:2:0:711::/}
@@ -44,5 +40,4 @@ done
 
 if [ "$CHANGED" = "1" ]; then
     /etc/init.d/fastd restart
-    echo Segment set to $SEGNUM
 fi
