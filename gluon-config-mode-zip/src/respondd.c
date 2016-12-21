@@ -79,7 +79,7 @@ static struct json_object * get_location(struct uci_context *ctx, struct uci_pac
 	return ret;
 }
 
-static struct json_object * respondd_provider_nodeinfo-zip(void) {
+static struct json_object * respondd_provider_nodeinfo_zip(void) {
 	struct json_object *ret = json_object_new_object();
 
 	struct uci_context *ctx = uci_alloc_context();
@@ -99,6 +99,6 @@ static struct json_object * respondd_provider_nodeinfo-zip(void) {
 
 
 const struct respondd_provider_info respondd_providers[] = {
-	{"nodeinfo-zip", respondd_provider_nodeinfo-zip},
+	{"nodeinfo-zip", respondd_provider_nodeinfo_zip},
 	{}
 };
