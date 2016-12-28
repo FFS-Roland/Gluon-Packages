@@ -22,7 +22,7 @@ if [ -z "$SEGINFO" ]; then
     exit 1
 fi
 SEGINFO=${SEGINFO/Address 1: 2001:2:0:711::/}
-VPNMTU=$(echo $SEGINFO | cut -d':' -s -f1)
+NEWMTU=$(echo $SEGINFO | cut -d':' -s -f1)
 SEGMENT=$(echo $SEGINFO | cut -d':' -f2)
 
 let PORT=SEGMENT+10040
@@ -40,11 +40,17 @@ do
     fi
 done
 
-if [ "$CHANGED" = "1" ]; then
-    if [ -n "$VPNMTU" ]; then
-        uci set fastd.mesh_vpn.mtu="$VPNMTU"
-        echo MTU set to $VPNMTU
+if [ -n "$NEWMTU" ]; then
+    OLDMTU=`uci get fastd.mesh_vpn.mtu`
+    if [ "$NEWMTU" != "$OLDMTU" ]; then
+        uci set fastd.mesh_vpn.mtu="$NEWMTU"
+        CHANGED=1
     fi
+fi
+
+if [ "$CHANGED" = "1" ]; then
     /etc/init.d/fastd restart
-    echo Segment set to $SEGNUM
+    echo Set Segment: $SEGNUM, MTU: $NEWMTU
+else
+    echo No changes
 fi
