@@ -1,30 +1,32 @@
 #!/bin/sh
 if [  $(ps | grep -c "{$(basename $0)}") -gt 4 ]; then
+    echo started twice
     exit 1
 fi
 
 if [  $(ps | grep -c "fastd") -lt 2 ]; then
+    echo fastd not running
     exit 0
 fi
 
 if [ "$(uci get fastd.mesh_vpn_backbone.auto_segment)" = "0" ]; then
+    echo auto_segment disabled
     exit 0
 fi 
 
-NODEID=`uci get network.bat0.macaddr`
-for i in `seq 1 5`;
-do
-    NODEID=${NODEID/\:/}
-done
-NODEID=ffs-$NODEID
-SEGMENT=`nslookup $NODEID.segassign.freifunk-stuttgart.de  [::1]:54 |tail -n1 `
-if [[ -z "${SEGMENT// }" ]]; then
+NODEID=`uci get network.bat0.macaddr | sed 's/://g'`
+PUBKEY=`/etc/init.d/fastd show_key mesh_vpn | cut -c1-12`
+SEGINFO=`nslookup ffs-$NODEID-$PUBKEY.segassign.freifunk-stuttgart.de  [::1]:54 | tail -n1`
+if [ -z "$SEGINFO" ]; then
+    echo Node not known
     exit 1
 fi
-SEGMENT=${SEGMENT/Address 1: 2001:2:0:711::/}
+SEGINFO=${SEGINFO/Address 1: 2001:2:0:711::/}
+NEWMTU=$(echo $SEGINFO | cut -d':' -s -f1)
+SEGMENT=$(echo $SEGINFO | cut -d':' -f2)
+
 let PORT=SEGMENT+10040
 SEGNUM=$(printf "%02d" $SEGMENT)
-
 CHANGED=0
 for i in `seq 1 10`;
 do
@@ -38,6 +40,17 @@ do
     fi
 done
 
+if [ -n "$NEWMTU" ]; then
+    OLDMTU=`uci get fastd.mesh_vpn.mtu`
+    if [ "$NEWMTU" != "$OLDMTU" ]; then
+        uci set fastd.mesh_vpn.mtu="$NEWMTU"
+        CHANGED=1
+    fi
+fi
+
 if [ "$CHANGED" = "1" ]; then
     /etc/init.d/fastd restart
+    echo Set Segment: $SEGNUM, MTU: $NEWMTU
+else
+    echo No changes
 fi
