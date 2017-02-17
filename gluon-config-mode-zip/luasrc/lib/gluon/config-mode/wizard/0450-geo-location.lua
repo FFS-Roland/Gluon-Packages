@@ -11,7 +11,7 @@ function M.section(form)
 
         local o = s:option(cbi.Value, "_zip", "ZIP-Code")
         o.value = uci:get_first("gluon-node-info", "location", "zip")
-        o.rmempty = false
+        o.rmempty = true
         o.datatype = "float"
         o.description = i18n.translatef("e.g. %s", "70499")
 end
