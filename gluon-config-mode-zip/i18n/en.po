@@ -1,0 +1,21 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: gluon-config-mode-zip\n"
+"PO-Revision-Date: 2017-02-17 02:18+0100\n"
+"Last-Translator: Philippe Käufer <freifunk@philhil.de>\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "gluon-config-mode:zip-help"
+msgstr "Some nice Text about the ZIP-Code "
+"and how it help for subnetting."
+
+msgid "ZIP-Code"
+msgstr "ZIP-Code"
+
+msgid "e.g. %s"
+msgstr "e.g. %s"
