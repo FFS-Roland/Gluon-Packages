@@ -6,10 +6,10 @@ local M = {}
 
 function M.section(form)
         local text = i18n.translate("gluon-config-mode:zip-help")
-
+	local fieldlabel = i18n.translate("ZIP-Code")
         local s = form:section(cbi.SimpleSection, nil, text)
 
-        local o = s:option(cbi.Value, "_zip", "ZIP-Code")
+	local o = s:option(cbi.Value, "_zip", fieldlabel)
         o.value = uci:get_first("gluon-node-info", "location", "zip")
         o.rmempty = true
         o.datatype = "float"

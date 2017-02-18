@@ -11,11 +11,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "gluon-config-mode:zip-help"
-"Some nice Text about the ZIP-Code "
-"and how it help for subnetting."
-msgstr ""
-"Ein Netter Text warum die PLZ benötigt "
-"wird."
+msgstr "Ein Netter Text warum die PLZ benötigt wird."
 
 msgid "ZIP-Code"
 msgstr "PLZ"
