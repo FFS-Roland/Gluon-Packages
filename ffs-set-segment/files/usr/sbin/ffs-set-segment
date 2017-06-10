@@ -1,14 +1,15 @@
 #!/bin/sh
+ME=$(basename $0)
 if [ $(ps | grep -c "{$(basename $0)}") -gt 4 ]; then
-  echo started twice
+  logger -s -t $ME "started twice"
   exit 1
 fi
 if [ $(ps | grep -c "fastd") -lt 2 ]; then
-  echo fastd not running
+  logger -t $ME "fastd not running"
   exit 0
 fi
 if [ "$(uci get fastd.mesh_vpn_backbone.auto_segment)" = "0" ]; then
-  echo auto_segment disabled
+  logger -t $ME "auto_segment disabled"
   exit 0
 fi
 
@@ -16,13 +17,17 @@ NODEID=$(uci get network.bat0.macaddr | sed 's/://g')
 PUBKEY=$(/etc/init.d/fastd show_key mesh_vpn | cut -c1-12)
 SEGINFO=$(nslookup ffs-$NODEID-$PUBKEY.segassign.freifunk-stuttgart.de  [::1]:54 | grep "2001:2:0:711::")
 if [ -z "$SEGINFO" ]; then
-  echo Node not known
+  logger -t $ME "Node not known"
   exit 1
 fi
 SEGINFO=${SEGINFO/Address 1: 2001:2:0:711::/}
 SEGMENT=$(echo $SEGINFO | cut -d':' -f2)
-
 let PORT=SEGMENT+10040
+if [ -z "$PORT" ]; then
+  logger -t $ME "No port"
+  exit 1
+fi
+
 SEGNUM=$(printf "%02d" $SEGMENT)
 CHANGED=0
 for i in `seq 1 10`;
@@ -41,7 +46,7 @@ if [ "$CHANGED" = "1" ]; then
   /sbin/ifdown client
   /etc/init.d/fastd restart
   /sbin/ifup client
-  echo Set Segment: $SEGNUM
+  logger -t $ME "Set Segment: $SEGNUM"
 else
-  echo No changes
+  logger -t $ME "No changes"
 fi
