@@ -21,7 +21,7 @@ if [ -z "$SEGINFO" ]; then
   exit 1
 fi
 SEGINFO=${SEGINFO/Address 1: 2001:2:0:711::/}
-SEGMENT=$(echo $SEGINFO | cut -d':' -f2)
+SEGMENT=$(echo $SEGINFO |cut -d' ' -f1 | cut -d':' -f2)
 let PORT=SEGMENT+10040
 if [ -z "$PORT" ]; then
   logger -t $ME "No port"
