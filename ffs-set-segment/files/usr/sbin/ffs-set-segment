@@ -22,8 +22,8 @@ if [ -z "$SEGINFO" ]; then
 fi
 SEGINFO=${SEGINFO/Address 1: 2001:2:0:711::/}
 SEGMENT=$(echo $SEGINFO |cut -d' ' -f1 | cut -d':' -f2)
-let PORT=SEGMENT+10040
-if [ $PORT -le 10040 ]; then
+let PORT=SEGMENT+10200
+if [ $PORT -le 10200 ]; then
   logger -t $ME "Invalid Segment"
   exit 1
 fi
@@ -42,6 +42,16 @@ do
   fi
 done
 
+NEWMTU=$(echo $SEGINFO |cut -d' ' -f1 | cut -s -d':' -f1)
+if [ -n "$NEWMTU" ]; then
+  OLDMTU=$(uci get fastd.mesh_vpn.mtu)
+  if [ "$NEWMTU" != "$OLDMTU" ]; then
+    uci set fastd.mesh_vpn.mtu="$NEWMTU"
+    logger -t $ME "Set MTU: $NEWMTU"
+    CHANGED=1
+  fi
+fi
+
 if [ "$CHANGED" = "1" ]; then
   /sbin/ifdown client
   /etc/init.d/fastd restart
@@ -49,4 +59,18 @@ if [ "$CHANGED" = "1" ]; then
   logger -t $ME "Set Segment: $SEGNUM"
 else
   logger -t $ME "No changes"
+  FFS=/tmp/.gw.ffs
+  NOW=$(date +%s)
+  if [ -n "$(batctl gwl | grep '=>')" ]; then
+    echo $NOW >$FFS
+  else
+    if [ -f $FFS ]; then
+      OFF=$(cat $FFS)
+      DELTA=$((NOW - OFF))
+      if [ $DELTA -gt 900 ]; then
+        reboot
+      fi
+    else
+      echo $NOW >$FFS
+    fi
 fi
