@@ -68,6 +68,7 @@ else
       OFF=$(cat $FFS)
       DELTA=$((NOW - OFF))
       if [ $DELTA -gt 900 ]; then
+        rm $FFS
         reboot
       fi
     else
