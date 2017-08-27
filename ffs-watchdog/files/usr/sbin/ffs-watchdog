@@ -1,0 +1,28 @@
+#!/bin/sh
+ME=$(basename $0)
+if [ $(ps | grep -c "$ME") -gt 4 ]; then
+  logger -s -t $ME "started twice"
+  exit 1
+fi
+
+if [ "$(uci get gluon-setup-mode.@setup_mode[0].enabled)" = "0" ]; then
+  FFS=/tmp/.gw.ffs
+  NOW=$(date +%s)
+  if [ -n "$(batctl gwl | grep '=>')" ]; then
+    echo $NOW >$FFS
+    logger -t $ME "node is online"
+  else
+    if [ -f $FFS ]; then
+      OFF=$(cat $FFS)
+      DELTA=$((NOW - OFF))
+      logger -t $ME "offline for ${DELTA} sec."
+
+      if [ $DELTA -gt 1000 ]; then
+        rm $FFS
+        reboot
+      fi
+    else
+      echo $NOW >$FFS
+    fi
+  fi
+fi
