@@ -3,8 +3,9 @@
 START=97
 
 start () {
+    rm /tmp/.*.ffs
     /etc/init.d/micrond enable
-    /etc/init.d/micrond restart    
+    /etc/init.d/micrond restart
 }
 
 stop() {
