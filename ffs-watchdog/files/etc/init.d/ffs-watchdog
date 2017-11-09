@@ -3,7 +3,11 @@
 START=97
 
 start () {
+<<<<<<< Updated upstream
     rm /tmp/.*.ffs
+=======
+    rm /tmp/.gw.ffs
+>>>>>>> Stashed changes
     /etc/init.d/micrond enable
     /etc/init.d/micrond restart
 }

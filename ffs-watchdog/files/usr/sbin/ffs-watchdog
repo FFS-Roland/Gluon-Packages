@@ -5,7 +5,14 @@ if [ $(ps | grep -c "$ME") -gt 4 ]; then
   exit 1
 fi
 
+<<<<<<< Updated upstream
 if [ "$(uci get gluon-setup-mode.@setup_mode[0].enabled)" = "0" ]; then
+=======
+FFS=/tmp/.gw.ffs
+if [ "$(uci get gluon-setup-mode.@setup_mode[0].enabled)" = "0" ] &&
+   [ "$(uci get system.@system[0].enable_watchdog)" != "0" ] &&
+   [ "$(netstat -nt | grep -c ':22')" = "0" ]; then
+>>>>>>> Stashed changes
   NOW=$(date +%s)
 
   FFIP6=$(ip -f inet6 address | grep "fd21:b4dc:4b" | cut -d':' -f3)
@@ -31,6 +38,7 @@ if [ "$(uci get gluon-setup-mode.@setup_mode[0].enabled)" = "0" ]; then
       DELTA=$((NOW - OFF))
       logger -t $ME "IPv6-Trouble for ${DELTA} sec."
 
+<<<<<<< Updated upstream
       if [ $DELTA -gt 1000 ]; then
         /sbin/ip link set dev br-client down
         sleep 1
@@ -53,10 +61,16 @@ if [ "$(uci get gluon-setup-mode.@setup_mode[0].enabled)" = "0" ]; then
 
       if [ $DELTA -gt 1600 ]; then
         rm $FFS
+=======
+      if [ $DELTA -gt 3500 ]; then
+>>>>>>> Stashed changes
         reboot
       fi
     else
       echo $NOW >$FFS
     fi
   fi
+else
+  rm $FFS
+  logger -t $ME "disabled"
 fi
