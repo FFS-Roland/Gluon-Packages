@@ -9,21 +9,23 @@ FFS=/tmp/.gw.ffs
 if [ "$(uci get gluon-setup-mode.@setup_mode[0].enabled)" = "0" ] &&
    [ "$(uci get system.@system[0].enable_watchdog)" != "0" ] &&
    [ "$(netstat -nt | grep -c ':22')" = "0" ]; then
-  NOW=$(date +%s)
+
   if [ -n "$(batctl gwl | grep '=>')" ]; then
-    echo $NOW >$FFS
+    echo 0 >$FFS
     logger -t $ME "node is online"
   else
     if [ -f $FFS ]; then
       OFF=$(cat $FFS)
-      DELTA=$((NOW - OFF))
-      logger -t $ME "offline for ${DELTA} sec."
-
-      if [ $DELTA -gt 3500 ]; then
-        reboot
-      fi
     else
-      echo $NOW >$FFS
+      OFF=1
+    fi
+      
+    logger -t $ME "offline count: ${OFF}"
+
+    if [ $OFF -gt 10 ]; then
+      reboot
+    else
+      echo $((OFF+1)) >$FFS
     fi
   fi
 else
