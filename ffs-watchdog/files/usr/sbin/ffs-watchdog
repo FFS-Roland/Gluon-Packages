@@ -5,58 +5,31 @@ if [ $(ps | grep -c "$ME") -gt 4 ]; then
   exit 1
 fi
 
-if [ "$(uci get gluon-setup-mode.@setup_mode[0].enabled)" = "0" ]; then
-  NOW=$(date +%s)
+FFS=/tmp/.gw.ffs
+if [ "$(uci get gluon-setup-mode.@setup_mode[0].enabled)" = "0" ] &&
+   [ "$(uci get system.@system[0].enable_watchdog)" != "0" ] &&
+   [ "$(netstat -nt | grep -c ':22')" = "0" ]; then
 
-  FFIP6=$(ip -f inet6 address | grep "fd21:b4dc:4b" | cut -d':' -f3)
-  MYSEG=
-  for seg in $FFIP6; do
-    if [ -z "$MYSEG" ]; then
-      MYSEG=$seg
-    else
-      if [ "$seg" != "$MYSEG" ]; then
-        MYSEG=X
-        logger -t $ME "multiple FFS-IPv6"
-      fi
-    fi
-  done
-
-  FFS=/tmp/.ip6.ffs
-  if [ "$MYSEG" != "X" ]; then
-    echo $NOW >$FFS
-    logger -t $ME "FFS-IPv6 ok"
+  if [ -n "$(batctl gwl | grep '=>')" ] &&
+     [ -n "$(ifconfig br-client | grep 'fd21:b4dc:4b')" ]; then
+    echo 0 >$FFS
+    logger -t $ME "node is online"
   else
     if [ -f $FFS ]; then
       OFF=$(cat $FFS)
-      DELTA=$((NOW - OFF))
-      logger -t $ME "IPv6-Trouble for ${DELTA} sec."
-
-      if [ $DELTA -gt 1000 ]; then
-        /sbin/ip link set dev br-client down
-        sleep 1
-        /sbin/ip link set dev br-client up
-      fi
     else
-      echo $NOW >$FFS
+      OFF=0
+    fi
+
+    logger -t $ME "offline count: ${OFF}"
+
+    if [ $OFF -gt 10 ]; then
+      reboot
+    else
+      echo $((OFF+1)) >$FFS
     fi
   fi
-
-  FFS=/tmp/.gw.ffs
-  if [ -n "$(batctl gwl | grep '=>')" ]; then
-    echo $NOW >$FFS
-    logger -t $ME "Node online"
-  else
-    if [ -f $FFS ]; then
-      OFF=$(cat $FFS)
-      DELTA=$((NOW - OFF))
-      logger -t $ME "Node offline for ${DELTA} sec."
-
-      if [ $DELTA -gt 1600 ]; then
-        rm $FFS
-        reboot
-      fi
-    else
-      echo $NOW >$FFS
-    fi
-  fi
+else
+  rm $FFS
+  logger -t $ME "disabled"
 fi
