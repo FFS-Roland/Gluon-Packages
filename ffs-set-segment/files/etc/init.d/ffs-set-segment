@@ -4,9 +4,10 @@ START=97
 
 start () {
     uci set fastd.mesh_vpn.on_connect='/usr/sbin/ffs-set-segment'
+    /etc/init.d/fastd restart
     /usr/sbin/ffs-set-segment
     /etc/init.d/micrond enable
-    /etc/init.d/micrond restart    
+    /etc/init.d/micrond restart
 }
 
 stop() {
