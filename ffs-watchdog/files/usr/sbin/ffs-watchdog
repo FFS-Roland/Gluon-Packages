@@ -10,7 +10,7 @@ if [ "$(uci get gluon-setup-mode.@setup_mode[0].enabled)" = "0" ] &&
    [ "$(uci get system.@system[0].enable_watchdog)" != "0" ] &&
    [ "$(netstat -nt | grep -c ':22')" = "0" ]; then
 
-  if [ -n "$(batctl gwl | grep '=>')" ] &&
+  if [ -n "$(batctl gwl | grep '* ')" ] &&
      [ $(ifconfig br-client | grep -c "inet6 addr:") -gt 2 ]; then
     echo 0 >$FFS
     logger -t $ME "node is online"
