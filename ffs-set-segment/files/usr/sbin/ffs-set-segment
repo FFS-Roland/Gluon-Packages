@@ -28,13 +28,24 @@ if [ $PORT -le 10200 ]; then
   exit 1
 fi
 
-SEGNUM=$(printf "%02d" $SEGMENT)
+if [ "$(cat /proc/uptime | cut -d'.' -f1)" -lt 60 ]; then
+  logger -t $ME "waiting for batman"
+  exit 0
+fi
+
+GITSEG=$(printf "%02d" $SEGMENT)
+BATSEG=$(batctl gwl | grep '* ' | cut -d' ' -f2 | cut -d':' -f4)
+if [ -n "$BATSEG" ] && [ "$BATSEG" != "$GITSEG" ]; then
+  logger -t $ME "Avoiding Shortcut"
+  exit 1
+fi
+
 CHANGED=0
 for i in `seq 1 10`;
 do
   GW=$(printf "gw%02d" $i)
   OLDPEER=$(uci get fastd.mesh_vpn_backbone_peer_${GW}.remote)
-  NEWPEER="\"${GW}s${SEGNUM}.gw.freifunk-stuttgart.de\" port $PORT"
+  NEWPEER="\"${GW}s${GITSEG}.gw.freifunk-stuttgart.de\" port $PORT"
 
   if [ "$NEWPEER" != "$OLDPEER" ]; then
     uci set fastd.mesh_vpn_backbone_peer_${GW}.remote="$NEWPEER"
@@ -46,7 +57,7 @@ if [ "$CHANGED" = "1" ]; then
   /sbin/ifdown client
   /etc/init.d/fastd restart
   /sbin/ifup client
-  logger -t $ME "Set Segment: $SEGNUM"
+  logger -t $ME "Set Segment: $GITSEG"
 else
   logger -t $ME "No changes"
 fi
