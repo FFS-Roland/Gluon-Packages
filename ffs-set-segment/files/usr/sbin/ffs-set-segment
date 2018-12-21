@@ -17,20 +17,13 @@ if [ "$(cat /proc/uptime | cut -d'.' -f1)" -lt 60 ]; then
   exit 0
 fi
 
-BATSEG=$(batctl gwl | grep '* ' | cut -d' ' -f2 | cut -d':' -f4)
 NODEID=$(uci get network.bat0.macaddr | sed 's/://g')
 PUBKEY=$(/etc/init.d/fastd show_key mesh_vpn | cut -c1-12)
-SEGINFO=$(nslookup ffs-${NODEID}-${PUBKEY}.segassign.freifunk-stuttgart.de ::1#54 | grep "2001:2:0:711::")
+BATSEG=$(batctl gwl | grep '* ' | cut -d' ' -f2 | sed 's/:0/:/g' | cut -d':' -f4)
+GITSEG=$(nslookup ffs-${NODEID}-${PUBKEY}.segassign.freifunk-stuttgart.de ::1#54 | grep "2001:2:0:711::" | cut -d':' -f7)
 
-if [ -z "$SEGINFO" ]; then
+if [ -z "$GITSEG" ]; then
   logger -t $ME "Node not registered"
-  GITSEG=00
-else
-  GITSEG=$(printf "%02d" $(echo ${SEGINFO/Address 1: 2001:2:0:711::/} |cut -d' ' -f1 | cut -d':' -f2))
-fi
-
-if [ "$GITSEG" == "00" ]; then
-  logger -t $ME "Unknown Segment"
   GITSEG=99
 else
   if [ -n "$BATSEG" ] && [ "$BATSEG" != "$GITSEG" ]; then
@@ -41,11 +34,12 @@ fi
 
 let PORT=GITSEG+10200
 CHANGED=0
+
 for i in `seq 1 10`;
 do
   GW=$(printf "gw%02d" $i)
   OLDPEER=$(uci get fastd.mesh_vpn_backbone_peer_${GW}.remote)
-  NEWPEER="\"${GW}s${GITSEG}.gw.freifunk-stuttgart.de\" port $PORT"
+  NEWPEER=$(printf "\"gw%02ds%02d.gw.freifunk-stuttgart.de\" port %d" $i $GITSEG $PORT)
 
   if [ "$NEWPEER" != "$OLDPEER" ]; then
     uci set fastd.mesh_vpn_backbone_peer_${GW}.remote="$NEWPEER"
