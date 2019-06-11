@@ -19,7 +19,7 @@ fi
 
 NODEID=$(uci get network.bat0.macaddr | sed 's/://g')
 PUBKEY=$(/etc/init.d/fastd show_key mesh_vpn | cut -c1-12)
-BATSEG=$(batctl gwl | grep '* ' | cut -d' ' -f2 | sed 's/:0/:/g' | cut -d':' -f4)
+BATSEG=$(batctl gwl | grep '02:00:3' | tail -1 | sed 's/:0/:/g' | cut -d':' -f4)
 GITSEG=$(nslookup ffs-${NODEID}-${PUBKEY}.segassign.freifunk-stuttgart.de ::1#54 | grep "2001:2:0:711::" | cut -d':' -f7)
 
 if [ -z "$GITSEG" ]; then
