@@ -1,4 +1,6 @@
 #!/bin/sh
+SEGSET=/tmp/.seg.ffs
+
 ME=$(basename $0)
 if [ $(ps | grep -c "$ME") -gt 4 ]; then
   logger -s -t $ME "started twice"
@@ -23,12 +25,18 @@ BATSEG=$(batctl gwl | grep '02:00:3' | tail -1 | sed 's/:0/:/g' | cut -d':' -f4)
 GITSEG=$(nslookup ffs-${NODEID}-${PUBKEY}.segassign.freifunk-stuttgart.de ::1#54 | grep "2001:2:0:711::" | cut -d':' -f7)
 
 if [ -z "$GITSEG" ]; then
-  logger -t $ME "Node not registered"
-  GITSEG=99
+  if [ -f $SEGSET ]; then
+    GITSEG=$(cat $SEGSET)
+    logger -t $ME "Node is in Segment: $GITSEG"
+  else
+    logger -t $ME "Node not registered"
+    GITSEG=99
+  fi
 else
   if [ -n "$BATSEG" ] && [ "$BATSEG" != "$GITSEG" ]; then
     logger -t $ME "Avoiding Shortcut"
     GITSEG=99
+    rm $SEGSET
   fi
 fi
 
@@ -51,6 +59,7 @@ if [ "$CHANGED" = "1" ]; then
   /sbin/ifdown client
   /etc/init.d/fastd restart
   /sbin/ifup client
+  echo $GITSEG >$SEGSET
   logger -t $ME "Set Segment: $GITSEG"
 else
   logger -t $ME "No changes"
