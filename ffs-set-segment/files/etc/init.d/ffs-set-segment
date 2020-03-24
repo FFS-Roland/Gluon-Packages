@@ -8,6 +8,7 @@ start () {
         /etc/init.d/fastd restart
     fi
 
+    rm /tmp/.seg.ffs
     /etc/init.d/micrond enable
     /etc/init.d/micrond restart
 }
